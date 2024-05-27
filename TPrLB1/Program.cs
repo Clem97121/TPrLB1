@@ -18,17 +18,6 @@ namespace TPrLB1
 
             CalculateAlternatives(criterionValues, numOfAlternatives, alternatives);
 
-            int[,] test = new int[2, 9];
-            test[0, 0] = 1; test[1, 0] = 1;
-            test[0, 1] = 1; test[1, 1] = 2;
-            test[0, 2] = 1; test[1, 2] = 3;
-            test[0, 3] = 2; test[1, 3] = 1;
-            test[0, 4] = 2; test[1, 4] = 2;
-            test[0, 5] = 2; test[1, 5] = 3;
-            test[0, 6] = 3; test[1, 6] = 1;
-            test[0, 7] = 3; test[1, 7] = 2;
-            test[0, 8] = 3; test[1, 8] = 3;
-
             Print(ref alternatives);
 
             AlgoritmStart(ref alternatives);
