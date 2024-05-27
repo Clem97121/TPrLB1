@@ -106,148 +106,34 @@ namespace TPrLB1
             float[] centr2 = new float[numOfCrit];
             FirstlyCalculateCentr2(alter, numOfCrit, numOfAlt, centr2);
 
-            float D = 0;
-
-            for (int i = 0; i < numOfAlt; i++)
-            {
-                G[i] = 3;
-            }
-            G[0] = 1; G[numOfAlt - 1] = 2;
+            float D;
+            FirstlyCalculateG(numOfAlt, G);
 
             do
             {
                 numOfIter++;
-                restart = false;
-                for (int i = 0; i < numOfAlt; i++)
-                {
-                    if (G[i] == 3)
-                        restart = true;
-                }
+                restart = CheckingRestart(numOfAlt, G);
 
-                for (int i = 0; i < numOfAlt; i++)
-                {
-                    float temp = 0;
-                    for (int j = 0; j < numOfCrit; j++)
-                    {
-                        temp += Math.Abs((float)alter[j, i] - centr1[j]);
-                    }
-                    d1[i] = temp;
-                }
-                for (int i = 0; i < numOfAlt; i++)
-                {
-                    float temp = 0;
-                    for (int j = 0; j < numOfCrit; j++)
-                    {
-                        temp += Math.Abs(alter[j, i] - centr2[j]);
-                    }
-                    d2[i] = temp;
-                }
+                Calculate_d1(alter, numOfCrit, numOfAlt, d1, centr1);
+                Calculate_d2(alter, numOfCrit, numOfAlt, d2, centr2);
+
                 D = Math.Max(d1.Max(), d2.Max());
-                Console.WriteLine("D = " + D);
-                for (int i = 0; i < numOfAlt; i++)
-                {
-                    if (G[i] == 3)
-                        p1[i] = (float)(D - d1[i]) / (D - d1[i] + D - d2[i]);
-                    else if (G[i] == 1)
-                    {
-                        p1[i] = 1;
-                    }
-                    else
-                    {
-                        p1[i] = 0;
-                    }
-                }
-                for (int i = 0; i < numOfAlt; i++)
-                {
-                    p2[i] = 1 - p1[i];
-                }
-                int NumUnDec = 0;
-                for (int i = 0; i < numOfAlt; i++)
-                    if (G[i] == 3) NumUnDec++;
-                int[,] CurentAlter = new int[numOfCrit, NumUnDec];
 
-                int[] tempg1 = new int[numOfAlt];
-                int[] tempg2 = new int[numOfAlt];
+                Console.WriteLine("D = " + D);  //Винести в вивід!!!
 
-                int tempForCur = 0;
-                for (int i = 0; i < numOfAlt; i++)
-                {
-                    if (G[i] == 3)
-                    {
-                        for (int j = 0; j < numOfCrit; j++)
-                        {
-                            CurentAlter[j, tempForCur] = alter[j, i];
-                        }
-                        tempForCur++;
-                    }
-                }
-                for (int k = 0; k < NumUnDec; k++)
-                {
-                    for (int i = 0; i < NumUnDec; i++)
-                    {
-                        int temp = 0;
-                        for (int j = 0; j < numOfCrit; j++)
-                        {
-                            if (CurentAlter[j, k] >= CurentAlter[j, i])
-                            {
-                                temp++;
-                            }
-                        }
-                        if (temp == numOfCrit) tempg1[k]++;
-                    }
-                    tempg1[k] -= 1;
-                }
-                for (int k = 0; k < NumUnDec; k++)
-                {
-                    for (int i = 0; i < NumUnDec; i++)
-                    {
-                        int temp = 0;
-                        for (int j = 0; j < numOfCrit; j++)
-                        {
-                            if (CurentAlter[j, k] <= CurentAlter[j, i])
-                            {
-                                temp++;
-                            }
-                        }
-                        if (temp == numOfCrit) tempg2[k]++;
-                    }
-                    tempg2[k] -= 1;
-                }
-                int tempForG1 = 0;
-                int tempForG2 = 0;
-                for (int i = 0; i < numOfAlt; i++)
-                {
-                    if (G[i] == 3)
-                    {
-                        g1[i] = tempg1[i - tempForG1];
-                        g2[i] = tempg2[i - tempForG2];
-                    }
-                    else
-                    {
-                        g1[i] = 0;
-                        tempForG1++;
-                        g2[i] = 0;
-                        tempForG2++;
-                    }
-                }
-                for (int i = 0; i < numOfAlt; i++)
-                {
-                    F1[i] = p1[i] * g1[i];
-                    F2[i] = p2[i] * g2[i];
-                    F[i] = F1[i] + F2[i];
-                }
+                Calculate_p1(numOfAlt, G, d1, d2, p1, D);
+                Calculate_p2(numOfAlt, p1, p2);
+                int numUnDec = CalculateNumUnDec(numOfAlt, G);
+                int[,] curentAlter = CalculateCurentAlter(alter, numOfCrit, numOfAlt, G, numUnDec);
 
-                float MaxF = F.Max();
-                int indMaxF = 0;
+                int[] tempg1 = CalculateTemp_g1(numOfCrit, numOfAlt, numUnDec, curentAlter);
+                int[] tempg2 = CalculateTemp_g2(numOfCrit, numOfAlt, numUnDec, curentAlter);
 
-                for (int i = 0; i < numOfAlt; i++)
-                {
-                    if (F[i] == MaxF)
-                    {
-                        indMaxF = i;
-                        break;
-                    }
-                }
+                Calculate_g1_g2(numOfAlt, G, g1, g2, tempg1, tempg2);
+                Calculate_F1_F2_F(numOfAlt, p1, p2, g1, g2, F1, F2, F);
+                float MaxF;
+                int indMaxF;
+                Calculate_MaxF_IndMaxF(numOfAlt, F, out MaxF, out indMaxF);
 
                 // Printing 
 
@@ -367,6 +253,198 @@ namespace TPrLB1
                 }
 
             } while (restart);
+        }
+
+        private static void Calculate_MaxF_IndMaxF(int numOfAlt, float[] F, out float MaxF, out int indMaxF)
+        {
+            MaxF = F.Max();
+            indMaxF = 0;
+            for (int i = 0; i < numOfAlt; i++)
+            {
+                if (F[i] == MaxF)
+                {
+                    indMaxF = i;
+                    break;
+                }
+            }
+        }
+
+        private static void Calculate_F1_F2_F(int numOfAlt, float[] p1, float[] p2, int[] g1, int[] g2, float[] F1, float[] F2, float[] F)
+        {
+            for (int i = 0; i < numOfAlt; i++)
+            {
+                F1[i] = p1[i] * g1[i];
+                F2[i] = p2[i] * g2[i];
+                F[i] = F1[i] + F2[i];
+            }
+        }
+
+        private static void Calculate_g1_g2(int numOfAlt, int[] G, int[] g1, int[] g2, int[] tempg1, int[] tempg2)
+        {
+            int tempForG1 = 0;
+            int tempForG2 = 0;
+            for (int i = 0; i < numOfAlt; i++)
+            {
+                if (G[i] == 3)
+                {
+                    g1[i] = tempg1[i - tempForG1];
+                    g2[i] = tempg2[i - tempForG2];
+                }
+                else
+                {
+                    g1[i] = 0;
+                    tempForG1++;
+                    g2[i] = 0;
+                    tempForG2++;
+                }
+            }
+        }
+
+        private static int[] CalculateTemp_g2(int numOfCrit, int numOfAlt, int numUnDec, int[,] curentAlter)
+        {
+            int[] tempg2 = new int[numOfAlt];
+            for (int k = 0; k < numUnDec; k++)
+            {
+                for (int i = 0; i < numUnDec; i++)
+                {
+                    int temp = 0;
+                    for (int j = 0; j < numOfCrit; j++)
+                    {
+                        if (curentAlter[j, k] <= curentAlter[j, i])
+                        {
+                            temp++;
+                        }
+                    }
+                    if (temp == numOfCrit) tempg2[k]++;
+                }
+                tempg2[k] -= 1;
+            }
+
+            return tempg2;
+        }
+
+        private static int[] CalculateTemp_g1(int numOfCrit, int numOfAlt, int numUnDec, int[,] curentAlter)
+        {
+            int[] tempg1 = new int[numOfAlt];
+
+            for (int k = 0; k < numUnDec; k++)
+            {
+                for (int i = 0; i < numUnDec; i++)
+                {
+                    int temp = 0;
+                    for (int j = 0; j < numOfCrit; j++)
+                    {
+                        if (curentAlter[j, k] >= curentAlter[j, i])
+                        {
+                            temp++;
+                        }
+                    }
+                    if (temp == numOfCrit) tempg1[k]++;
+                }
+                tempg1[k] -= 1;
+            }
+
+            return tempg1;
+        }
+
+        private static int[,] CalculateCurentAlter(int[,] alter, int numOfCrit, int numOfAlt, int[] G, int numUnDec)
+        {
+            int[,] curentAlter = new int[numOfCrit, numUnDec];
+
+            int tempForCur = 0;
+            for (int i = 0; i < numOfAlt; i++)
+            {
+                if (G[i] == 3)
+                {
+                    for (int j = 0; j < numOfCrit; j++)
+                    {
+                        curentAlter[j, tempForCur] = alter[j, i];
+                    }
+                    tempForCur++;
+                }
+            }
+
+            return curentAlter;
+        }
+
+        private static int CalculateNumUnDec(int numOfAlt, int[] G)
+        {
+            int numUnDec = 0;
+            for (int i = 0; i < numOfAlt; i++)
+                if (G[i] == 3) numUnDec++;
+            return numUnDec;
+        }
+
+        private static void Calculate_p2(int numOfAlt, float[] p1, float[] p2)
+        {
+            for (int i = 0; i < numOfAlt; i++)
+            {
+                p2[i] = 1 - p1[i];
+            }
+        }
+
+        private static void Calculate_p1(int numOfAlt, int[] G, float[] d1, float[] d2, float[] p1, float D)
+        {
+            for (int i = 0; i < numOfAlt; i++)
+            {
+                if (G[i] == 3)
+                    p1[i] = (float)(D - d1[i]) / (D - d1[i] + D - d2[i]);
+                else if (G[i] == 1)
+                {
+                    p1[i] = 1;
+                }
+                else
+                {
+                    p1[i] = 0;
+                }
+            }
+        }
+
+        private static void Calculate_d2(int[,] alter, int numOfCrit, int numOfAlt, float[] d2, float[] centr2)
+        {
+            for (int i = 0; i < numOfAlt; i++)
+            {
+                float temp = 0;
+                for (int j = 0; j < numOfCrit; j++)
+                {
+                    temp += Math.Abs(alter[j, i] - centr2[j]);
+                }
+                d2[i] = temp;
+            }
+        }
+
+        private static void Calculate_d1(int[,] alter, int numOfCrit, int numOfAlt, float[] d1, float[] centr1)
+        {
+            for (int i = 0; i < numOfAlt; i++)
+            {
+                float temp = 0;
+                for (int j = 0; j < numOfCrit; j++)
+                {
+                    temp += Math.Abs((float)alter[j, i] - centr1[j]);
+                }
+                d1[i] = temp;
+            }
+        }
+
+        private static bool CheckingRestart(int numOfAlt, int[] G)
+        {
+            bool restart = false;
+            for (int i = 0; i < numOfAlt; i++)
+            {
+                if (G[i] == 3)
+                    restart = true;
+            }
+
+            return restart;
+        }
+
+        private static void FirstlyCalculateG(int numOfAlt, int[] G)
+        {
+            for (int i = 0; i < numOfAlt; i++)
+            {
+                G[i] = 3;
+            }
+            G[0] = 1; G[numOfAlt - 1] = 2;
         }
 
         private static void FirstlyCalculateCentr2(int[,] alter, int numOfCrit, int numOfAlt, float[] centr2)
