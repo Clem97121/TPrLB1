@@ -10,12 +10,8 @@ namespace TPrLB1
     {
         static void Main(string[] args)
         {
-            List<int> criterion_values = new List<int>();
-            criterion_values.Add(2);
-            criterion_values.Add(2);
-            criterion_values.Add(3);
-            criterion_values.Add(4);
-            criterion_values.Add(1);
+            List<int> criterion_values = new List<int>() { 2,2,3,4,1 };
+
             int Number_of_possible_alternatives = 48;
 
             int[,] alternatives = new int[criterion_values.Count, Number_of_possible_alternatives];
