@@ -12,6 +12,8 @@ namespace TPrLB1
         {
             List<int> criterionValues = new List<int>() { 2, 2, 3, 4, 1 };
 
+            int[] iterClass = new int[15] { 2, 2, 2, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 1, 2 };
+
             int numOfAlternatives = CalculateNumAlter(criterionValues);
 
             int[,] alternatives = new int[criterionValues.Count, numOfAlternatives];
@@ -20,7 +22,7 @@ namespace TPrLB1
 
             Print(alternatives);
 
-            AlgoritmStart(ref alternatives);
+            AlgoritmStart(alternatives, iterClass);
 
             Console.ReadLine();
         }
@@ -78,74 +80,63 @@ namespace TPrLB1
             }
             Console.WriteLine();
         }
-        public static void AlgoritmStart(ref int[,] alter)
+        public static void AlgoritmStart(int[,] alter, int[] iterClass)
         {
-            int NumAl = alter.GetLength(1);
-            int NumCrit = alter.GetLength(0);
+            int numOfCrit = alter.GetLength(0);
+            int numOfAlt = alter.GetLength(1);
 
-            //int[] iterClass = new int[15] { 1, 2, 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 1, 2 };
-            int[] iterClass = new int[15] { 2, 2, 2, 1, 2, 1, 1, 2, 1, 2, 1, 1, 2, 1, 2 };
+            int[] G = new int[numOfAlt];
+            float[] d1 = new float[numOfAlt];
+            float[] d2 = new float[numOfAlt];
+            float[] p1 = new float[numOfAlt];
+            float[] p2 = new float[numOfAlt];
+            int[] g1 = new int[numOfAlt];
+            int[] g2 = new int[numOfAlt];
+            float[] F1 = new float[numOfAlt];
+            float[] F2 = new float[numOfAlt];
+            float[] F = new float[numOfAlt];
 
-            int[] G = new int[NumAl]; // Инициализируем массив G
-            float[] d1 = new float[NumAl];
-            float[] d2 = new float[NumAl];
-            float[] p1 = new float[NumAl];
-            float[] p2 = new float[NumAl];
-            int[] g1 = new int[NumAl];
-            int[] g2 = new int[NumAl];
-            float[] F1 = new float[NumAl];
-            float[] F2 = new float[NumAl];
-            float[] F = new float[NumAl];
+            bool restart;
 
-            bool cont = false;
+            int numOfIter = 0;
 
-            int NumOfIter = 0;
+            float[] centr1 = new float[numOfCrit];
+            FirtstlyCalculateCentr1(numOfCrit, centr1);
 
-            float[] centr1 = new float[NumCrit];
-
-            for (int i = 0; i < NumCrit; i++)
-            {
-                centr1[i] = 1;
-            }
-
-            float[] centr2 = new float[NumCrit];
-
-            for (int i = 0; i < NumCrit; i++)
-            {
-                centr2[i] = alter[i,NumAl-1];
-            }
+            float[] centr2 = new float[numOfCrit];
+            FirstlyCalculateCentr2(alter, numOfCrit, numOfAlt, centr2);
 
             float D = 0;
 
-            for (int i = 0;i < NumAl; i++)
+            for (int i = 0; i < numOfAlt; i++)
             {
                 G[i] = 3;
             }
-            G[0] = 1; G[NumAl - 1] = 2;
+            G[0] = 1; G[numOfAlt - 1] = 2;
 
             do
             {
-                NumOfIter++;
-                cont = false;
-                for (int i = 0; i < NumAl; i++)
+                numOfIter++;
+                restart = false;
+                for (int i = 0; i < numOfAlt; i++)
                 {
                     if (G[i] == 3)
-                        cont = true;
+                        restart = true;
                 }
 
-                for (int i = 0; i < NumAl; i++)
+                for (int i = 0; i < numOfAlt; i++)
                 {
                     float temp = 0;
-                    for (int j = 0; j < NumCrit; j++)
+                    for (int j = 0; j < numOfCrit; j++)
                     {
                         temp += Math.Abs((float)alter[j, i] - centr1[j]);
                     }
                     d1[i] = temp;
                 }
-                for (int i = 0; i < NumAl; i++)
+                for (int i = 0; i < numOfAlt; i++)
                 {
                     float temp = 0;
-                    for (int j = 0; j < NumCrit; j++)
+                    for (int j = 0; j < numOfCrit; j++)
                     {
                         temp += Math.Abs(alter[j, i] - centr2[j]);
                     }
@@ -153,7 +144,7 @@ namespace TPrLB1
                 }
                 D = Math.Max(d1.Max(), d2.Max());
                 Console.WriteLine("D = " + D);
-                for (int i = 0; i < NumAl; i++)
+                for (int i = 0; i < numOfAlt; i++)
                 {
                     if (G[i] == 3)
                         p1[i] = (float)(D - d1[i]) / (D - d1[i] + D - d2[i]);
@@ -166,24 +157,24 @@ namespace TPrLB1
                         p1[i] = 0;
                     }
                 }
-                for (int i = 0; i < NumAl; i++)
+                for (int i = 0; i < numOfAlt; i++)
                 {
                     p2[i] = 1 - p1[i];
                 }
                 int NumUnDec = 0;
-                for (int i = 0; i < NumAl; i++)
+                for (int i = 0; i < numOfAlt; i++)
                     if (G[i] == 3) NumUnDec++;
-                int[,] CurentAlter = new int[NumCrit, NumUnDec];
+                int[,] CurentAlter = new int[numOfCrit, NumUnDec];
 
-                int[] tempg1 = new int[NumAl];
-                int[] tempg2 = new int[NumAl];
+                int[] tempg1 = new int[numOfAlt];
+                int[] tempg2 = new int[numOfAlt];
 
                 int tempForCur = 0;
-                for (int i = 0; i < NumAl; i++)
+                for (int i = 0; i < numOfAlt; i++)
                 {
                     if (G[i] == 3)
                     {
-                        for (int j = 0; j < NumCrit; j++)
+                        for (int j = 0; j < numOfCrit; j++)
                         {
                             CurentAlter[j, tempForCur] = alter[j, i];
                         }
@@ -195,14 +186,14 @@ namespace TPrLB1
                     for (int i = 0; i < NumUnDec; i++)
                     {
                         int temp = 0;
-                        for (int j = 0; j < NumCrit; j++)
+                        for (int j = 0; j < numOfCrit; j++)
                         {
                             if (CurentAlter[j, k] >= CurentAlter[j, i])
                             {
                                 temp++;
                             }
                         }
-                        if (temp == NumCrit) tempg1[k]++;
+                        if (temp == numOfCrit) tempg1[k]++;
                     }
                     tempg1[k] -= 1;
                 }
@@ -211,20 +202,20 @@ namespace TPrLB1
                     for (int i = 0; i < NumUnDec; i++)
                     {
                         int temp = 0;
-                        for (int j = 0; j < NumCrit; j++)
+                        for (int j = 0; j < numOfCrit; j++)
                         {
                             if (CurentAlter[j, k] <= CurentAlter[j, i])
                             {
                                 temp++;
                             }
                         }
-                        if (temp == NumCrit) tempg2[k]++;
+                        if (temp == numOfCrit) tempg2[k]++;
                     }
                     tempg2[k] -= 1;
                 }
                 int tempForG1 = 0;
                 int tempForG2 = 0;
-                for (int i = 0; i < NumAl; i++)
+                for (int i = 0; i < numOfAlt; i++)
                 {
                     if (G[i] == 3)
                     {
@@ -239,7 +230,7 @@ namespace TPrLB1
                         tempForG2++;
                     }
                 }
-                for (int i = 0; i < NumAl; i++)
+                for (int i = 0; i < numOfAlt; i++)
                 {
                     F1[i] = p1[i] * g1[i];
                     F2[i] = p2[i] * g2[i];
@@ -249,7 +240,7 @@ namespace TPrLB1
                 float MaxF = F.Max();
                 int indMaxF = 0;
 
-                for (int i = 0;i < NumAl; i++)
+                for (int i = 0; i < numOfAlt; i++)
                 {
                     if (F[i] == MaxF)
                     {
@@ -261,18 +252,18 @@ namespace TPrLB1
                 // Printing 
 
                 string str = string.Empty;
-                for (int i = 0; i < NumCrit; i++)
+                for (int i = 0; i < numOfCrit; i++)
                 {
                     str += alter[i, i];
                 }
 
                 string outFirstStr = "";
-                for (int j = 0; j < NumCrit; j++)
+                for (int j = 0; j < numOfCrit; j++)
                 {
                     outFirstStr += "K" + (j + 1) + " ";
                 }
                 Console.WriteLine(outFirstStr + "G     d1     d2    p1    p2   g1    g2    F1    F2     F");
-                for (int i = 0; i < NumAl; i++)
+                for (int i = 0; i < numOfAlt; i++)
                 {
                     string d1StrTemp = d1[i].ToString();
                     string d1Str = d1[i].ToString().Substring(0, Math.Min(d1StrTemp.ToString().Length, 4));
@@ -297,7 +288,7 @@ namespace TPrLB1
 
 
                     string output = "";
-                    for (int j = 0; j < NumCrit; j++)
+                    for (int j = 0; j < numOfCrit; j++)
                     {
                         output += alter[j, i] + "  ";
                     }
@@ -311,24 +302,24 @@ namespace TPrLB1
                 Console.WriteLine("Index of Max F = " + indMaxF);
                 string strCentr1 = "";
                 string strCentr2 = "";
-                for (int i = 0; i < NumCrit; i++)
+                for (int i = 0; i < numOfCrit; i++)
                 {
                     strCentr1 += centr1[i].ToString() + " ";
                     strCentr2 += centr2[i].ToString() + " ";
                 }
                 Console.WriteLine("Centr1 = " + strCentr1);
                 Console.WriteLine("Centr2 = " + strCentr2);
-                Console.WriteLine("Num of Iteration = " + NumOfIter);
+                Console.WriteLine("Num of Iteration = " + numOfIter);
                 Console.WriteLine();
 
-                G[indMaxF] = iterClass[NumOfIter - 1];
+                G[indMaxF] = iterClass[numOfIter - 1];
 
-                for (int i = 0; i < NumAl; i++)
+                for (int i = 0; i < numOfAlt; i++)
                 {
                     int temp = 0;
-                    for (int j = 0; j < NumCrit; j++)
+                    for (int j = 0; j < numOfCrit; j++)
                     {
-                        if(iterClass[NumOfIter - 1] == 1)
+                        if (iterClass[numOfIter - 1] == 1)
                         {
                             if (alter[j, indMaxF] >= alter[j, i])
                             {
@@ -343,17 +334,17 @@ namespace TPrLB1
                             }
                         }
                     }
-                    if (temp == NumCrit) G[i] = iterClass[NumOfIter - 1];
+                    if (temp == numOfCrit) G[i] = iterClass[numOfIter - 1];
                 }
 
 
-                int[] indexSum1 = new int[NumCrit];
+                int[] indexSum1 = new int[numOfCrit];
                 int numOfNewIndex1 = 0;
-                int[] indexSum2 = new int[NumCrit];
+                int[] indexSum2 = new int[numOfCrit];
                 int numOfNewIndex2 = 0;
-                for (int i = 0; i < NumAl; i++)
+                for (int i = 0; i < numOfAlt; i++)
                 {
-                    for (int j = 0;j < NumCrit; j++)
+                    for (int j = 0; j < numOfCrit; j++)
                     {
                         if (G[i] == 1)
                         {
@@ -367,16 +358,31 @@ namespace TPrLB1
                         }
                     }
                 }
-                numOfNewIndex1 /= NumCrit;
-                numOfNewIndex2 /= NumCrit;
-                for (int i = 0; i < NumCrit; i++)
+                numOfNewIndex1 /= numOfCrit;
+                numOfNewIndex2 /= numOfCrit;
+                for (int i = 0; i < numOfCrit; i++)
                 {
                     centr1[i] = (float)indexSum1[i] / numOfNewIndex1;
                     centr2[i] = (float)indexSum2[i] / numOfNewIndex2;
                 }
 
-                } while (cont);
+            } while (restart);
         }
 
+        private static void FirstlyCalculateCentr2(int[,] alter, int numOfCrit, int numOfAlt, float[] centr2)
+        {
+            for (int i = 0; i < numOfCrit; i++)
+            {
+                centr2[i] = alter[i, numOfAlt - 1];
+            }
+        }
+
+        private static void FirtstlyCalculateCentr1(int numOfCrit, float[] centr1)
+        {
+            for (int i = 0; i < numOfCrit; i++)
+            {
+                centr1[i] = 1;
+            }
+        }
     }
 }
