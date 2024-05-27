@@ -10,31 +10,13 @@ namespace TPrLB1
     {
         static void Main(string[] args)
         {
-            List<int> criterionValues = new List<int>() { 2,2,3,4,1 };
+            List<int> criterionValues = new List<int>() { 2, 2, 3, 4, 1 };
 
             int numOfAlternatives = CalculateNumAlter(criterionValues);
 
-            int numOfCrit = criterionValues.Count;
+            int[,] alternatives = new int[criterionValues.Count, numOfAlternatives];
 
-            int[,] alternatives = new int[numOfCrit, numOfAlternatives];
-
-            int[] stepForAlters = new int[numOfCrit];
-
-            CalculateStepForAlters(criterionValues, numOfAlternatives, stepForAlters);
-
-            int temp;
-            for (int i = 0; i < numOfCrit; i++)
-            {
-                temp = 0;
-                for (int j = 0; j < numOfAlternatives / stepForAlters[i]; j++)
-                {
-                    for (int k = 0; k < stepForAlters[i]; k++)
-                    {
-                        alternatives[i, temp] = (j) % criterionValues[i] + 1;
-                        temp++;
-                    }
-                }
-            }
+            CalculateAlternatives(criterionValues, numOfAlternatives, alternatives);
 
             int[,] test = new int[2, 9];
             test[0, 0] = 1; test[1, 0] = 1;
@@ -54,6 +36,27 @@ namespace TPrLB1
 
 
             Console.ReadLine();
+        }
+
+        public static void CalculateAlternatives(List<int> criterionValues, int numOfAlternatives, int[,] alternatives)
+        {
+            int[] stepForAlters = new int[criterionValues.Count];
+
+            CalculateStepForAlters(criterionValues, numOfAlternatives, stepForAlters);
+
+            int temp;
+            for (int i = 0; i < criterionValues.Count; i++)
+            {
+                temp = 0;
+                for (int j = 0; j < numOfAlternatives / stepForAlters[i]; j++)
+                {
+                    for (int k = 0; k < stepForAlters[i]; k++)
+                    {
+                        alternatives[i, temp] = (j) % criterionValues[i] + 1;
+                        temp++;
+                    }
+                }
+            }
         }
 
         public static int CalculateNumAlter(List<int> criterionValues)

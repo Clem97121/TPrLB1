@@ -37,6 +37,21 @@ namespace TPrLB1.Tests
 
             Assert.That(result, Is.EqualTo(20));
         }
+        [Test]
+        public void Test_CalculateAlternatives()
+        {
+            List<int> criterionValues = new List<int>() { 2, 2};
+
+            int numOfAlternatives = Program.CalculateNumAlter(criterionValues);
+
+            int[,] alternatives = new int[criterionValues.Count, numOfAlternatives];
+
+            Program.CalculateAlternatives(criterionValues, numOfAlternatives, alternatives);
+
+            int[,] expected = new int[2, 4] { { 1, 1, 2, 2 }, { 1, 2, 1, 2 }};
+
+            Assert.That(alternatives, Is.EqualTo(expected));
+        }
 
     }
 }
