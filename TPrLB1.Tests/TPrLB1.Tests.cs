@@ -12,19 +12,30 @@ namespace TPrLB1.Tests
     public class Tests
     {
         [Test]
-        public void Test_Prikola() 
+        public void Test_CalculateStepForAlters()
         {
-            List<int> criterion_values = new List<int>() { 2, 2};
+            List<int> criterionValues = new List<int>() { 2, 2 };
 
-            int Number_of_possible_alternatives = 4;
+            int numOfAlternatives = Program.CalculateNumAlter(criterionValues);
 
-            int[] prikol = new int[criterion_values.Count];
+            int numOfCrit = criterionValues.Count;
 
-            Program.PrikolTest(criterion_values, Number_of_possible_alternatives, prikol);
+            int[] stepForAlters = new int[numOfCrit];
 
-            int[] expected = new int[2] {2, 1};
+            Program.CalculateStepForAlters(criterionValues, numOfAlternatives, stepForAlters);
 
-            Assert.That(prikol, Is.EqualTo(expected));
+            int[] expected = new int[2] { 2, 1 };
+
+            Assert.That(stepForAlters, Is.EqualTo(expected));
+        }
+        [Test]
+        public void Test_CalculateNumAlter() 
+        {
+            List<int> criterionValues = new List<int>() { 2, 5, 2};
+
+            int result = Program.CalculateNumAlter(criterionValues);
+
+            Assert.That(result, Is.EqualTo(20));
         }
 
     }

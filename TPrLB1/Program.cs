@@ -10,26 +10,28 @@ namespace TPrLB1
     {
         static void Main(string[] args)
         {
-            List<int> criterion_values = new List<int>() { 2,2,3,4,1 };
+            List<int> criterionValues = new List<int>() { 2,2,3,4,1 };
 
-            int Number_of_possible_alternatives = 48;
+            int numOfAlternatives = CalculateNumAlter(criterionValues);
 
-            int[,] alternatives = new int[criterion_values.Count, Number_of_possible_alternatives];
+            int numOfCrit = criterionValues.Count;
 
-            int[] prikol = new int[criterion_values.Count];
+            int[,] alternatives = new int[numOfCrit, numOfAlternatives];
 
-            PrikolTest(criterion_values, Number_of_possible_alternatives, prikol);
+            int[] stepForAlters = new int[numOfCrit];
 
-            int count;
-            for (int i = 0; i < criterion_values.Count; i++)
+            CalculateStepForAlters(criterionValues, numOfAlternatives, stepForAlters);
+
+            int temp;
+            for (int i = 0; i < numOfCrit; i++)
             {
-                count = 0;
-                for (int j = 0; j < Number_of_possible_alternatives / prikol[i]; j++)
+                temp = 0;
+                for (int j = 0; j < numOfAlternatives / stepForAlters[i]; j++)
                 {
-                    for (int k = 0; k < prikol[i]; k++)
+                    for (int k = 0; k < stepForAlters[i]; k++)
                     {
-                        alternatives[i, count] = (j) % criterion_values[i] + 1;
-                        count++;
+                        alternatives[i, temp] = (j) % criterionValues[i] + 1;
+                        temp++;
                     }
                 }
             }
@@ -54,7 +56,17 @@ namespace TPrLB1
             Console.ReadLine();
         }
 
-        public static void PrikolTest(List<int> criterion_values, int Number_of_possible_alternatives, int[] prikol)
+        public static int CalculateNumAlter(List<int> criterionValues)
+        {
+            int mul = 1;
+            foreach(int i in criterionValues)
+            {
+                mul *= i;
+            }
+            return mul;
+        }
+
+        public static void CalculateStepForAlters(List<int> criterion_values, int Number_of_possible_alternatives, int[] prikol)
         {
             prikol[0] = Number_of_possible_alternatives / criterion_values[0];
 
