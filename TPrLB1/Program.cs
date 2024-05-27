@@ -139,76 +139,87 @@ namespace TPrLB1
 
                 PrintFirstString(numOfCrit);
                 PrintingMainTable(alter, numOfCrit, numOfAlt, G, d1, d2, p1, p2, g1, g2, F1, F2, F);
-
-                Console.WriteLine("Max F = " + MaxF);
-                Console.WriteLine("Index of Max F = " + indMaxF);
-                string strCentr1 = "";
-                string strCentr2 = "";
-                for (int i = 0; i < numOfCrit; i++)
-                {
-                    strCentr1 += centr1[i].ToString() + " ";
-                    strCentr2 += centr2[i].ToString() + " ";
-                }
-                Console.WriteLine("Centr1 = " + strCentr1);
-                Console.WriteLine("Centr2 = " + strCentr2);
-                Console.WriteLine("Num of Iteration = " + numOfIter);
-                Console.WriteLine();
-
-                G[indMaxF] = iterClass[numOfIter - 1];
-
-                for (int i = 0; i < numOfAlt; i++)
-                {
-                    int temp = 0;
-                    for (int j = 0; j < numOfCrit; j++)
-                    {
-                        if (iterClass[numOfIter - 1] == 1)
-                        {
-                            if (alter[j, indMaxF] >= alter[j, i])
-                            {
-                                temp++;
-                            }
-                        }
-                        else
-                        {
-                            if (alter[j, indMaxF] <= alter[j, i])
-                            {
-                                temp++;
-                            }
-                        }
-                    }
-                    if (temp == numOfCrit) G[i] = iterClass[numOfIter - 1];
-                }
-
-
-                int[] indexSum1 = new int[numOfCrit];
-                int numOfNewIndex1 = 0;
-                int[] indexSum2 = new int[numOfCrit];
-                int numOfNewIndex2 = 0;
-                for (int i = 0; i < numOfAlt; i++)
-                {
-                    for (int j = 0; j < numOfCrit; j++)
-                    {
-                        if (G[i] == 1)
-                        {
-                            numOfNewIndex1++;
-                            indexSum1[j] += alter[j, i];
-                        }
-                        if (G[i] == 2)
-                        {
-                            numOfNewIndex2++;
-                            indexSum2[j] += alter[j, i];
-                        }
-                    }
-                }
-                numOfNewIndex1 /= numOfCrit;
-                numOfNewIndex2 /= numOfCrit;
-                for (int i = 0; i < numOfCrit; i++)
-                {
-                    centr1[i] = (float)indexSum1[i] / numOfNewIndex1;
-                    centr2[i] = (float)indexSum2[i] / numOfNewIndex2;
-                }
+                PrintingAdditionalInfo(numOfCrit, numOfIter, centr1, centr2, MaxF, indMaxF);
+                CalculateNewG(alter, iterClass, numOfCrit, numOfAlt, G, numOfIter, indMaxF);
+                CalculateNewCentrs(alter, numOfCrit, numOfAlt, G, centr1, centr2);
 
             } while (restart);
+        }
+
+        private static void CalculateNewCentrs(int[,] alter, int numOfCrit, int numOfAlt, int[] G, float[] centr1, float[] centr2)
+        {
+            int[] indexSum1 = new int[numOfCrit];
+            int numOfNewIndex1 = 0;
+            int[] indexSum2 = new int[numOfCrit];
+            int numOfNewIndex2 = 0;
+            for (int i = 0; i < numOfAlt; i++)
+            {
+                for (int j = 0; j < numOfCrit; j++)
+                {
+                    if (G[i] == 1)
+                    {
+                        numOfNewIndex1++;
+                        indexSum1[j] += alter[j, i];
+                    }
+                    if (G[i] == 2)
+                    {
+                        numOfNewIndex2++;
+                        indexSum2[j] += alter[j, i];
+                    }
+                }
+            }
+            numOfNewIndex1 /= numOfCrit;
+            numOfNewIndex2 /= numOfCrit;
+            for (int i = 0; i < numOfCrit; i++)
+            {
+                centr1[i] = (float)indexSum1[i] / numOfNewIndex1;
+                centr2[i] = (float)indexSum2[i] / numOfNewIndex2;
+            }
+        }
+
+        private static void CalculateNewG(int[,] alter, int[] iterClass, int numOfCrit, int numOfAlt, int[] G, int numOfIter, int indMaxF)
+        {
+            G[indMaxF] = iterClass[numOfIter - 1];
+
+            for (int i = 0; i < numOfAlt; i++)
+            {
+                int temp = 0;
+                for (int j = 0; j < numOfCrit; j++)
+                {
+                    if (iterClass[numOfIter - 1] == 1)
+                    {
+                        if (alter[j, indMaxF] >= alter[j, i])
+                        {
+                            temp++;
+                        }
+                    }
+                    else
+                    {
+                        if (alter[j, indMaxF] <= alter[j, i])
+                        {
+                            temp++;
+                        }
+                    }
+                }
+                if (temp == numOfCrit) G[i] = iterClass[numOfIter - 1];
+            }
+        }
+
+        private static void PrintingAdditionalInfo(int numOfCrit, int numOfIter, float[] centr1, float[] centr2, float MaxF, int indMaxF)
+        {
+            Console.WriteLine("Max F = " + MaxF);
+            Console.WriteLine("Index of Max F = " + indMaxF);
+            string strCentr1 = "";
+            string strCentr2 = "";
+            for (int i = 0; i < numOfCrit; i++)
+            {
+                strCentr1 += centr1[i].ToString() + " ";
+                strCentr2 += centr2[i].ToString() + " ";
+            }
+            Console.WriteLine("Centr1 = " + strCentr1);
+            Console.WriteLine("Centr2 = " + strCentr2);
+            Console.WriteLine("Num of Iteration = " + numOfIter);
+            Console.WriteLine();
         }
 
         private static void PrintingMainTable(int[,] alter, int numOfCrit, int numOfAlt, int[] G, float[] d1, float[] d2, float[] p1, float[] p2, int[] g1, int[] g2, float[] F1, float[] F2, float[] F)
