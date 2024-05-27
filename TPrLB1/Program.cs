@@ -18,11 +18,9 @@ namespace TPrLB1
 
             CalculateAlternatives(criterionValues, numOfAlternatives, alternatives);
 
-            Print(ref alternatives);
+            Print(alternatives);
 
             AlgoritmStart(ref alternatives);
-
-
 
             Console.ReadLine();
         }
@@ -68,7 +66,7 @@ namespace TPrLB1
             }
         }
 
-        public static void Print(ref int[,] alter)
+        public static void Print(int[,] alter)
         {
             for (int i = 0; i < alter.GetLength(1); i++)
             {
