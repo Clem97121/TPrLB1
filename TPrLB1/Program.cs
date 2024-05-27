@@ -119,8 +119,6 @@ namespace TPrLB1
 
                 D = Math.Max(d1.Max(), d2.Max());
 
-                Console.WriteLine("D = " + D);  //Винести в вивід!!!
-
                 Calculate_p1(numOfAlt, G, d1, d2, p1, D);
                 Calculate_p2(numOfAlt, p1, p2);
                 int numUnDec = CalculateNumUnDec(numOfAlt, G);
@@ -137,53 +135,11 @@ namespace TPrLB1
 
                 // Printing 
 
-                string str = string.Empty;
-                for (int i = 0; i < numOfCrit; i++)
-                {
-                    str += alter[i, i];
-                }
+                Console.WriteLine("D = " + D);
 
-                string outFirstStr = "";
-                for (int j = 0; j < numOfCrit; j++)
-                {
-                    outFirstStr += "K" + (j + 1) + " ";
-                }
-                Console.WriteLine(outFirstStr + "G     d1     d2    p1    p2   g1    g2    F1    F2     F");
-                for (int i = 0; i < numOfAlt; i++)
-                {
-                    string d1StrTemp = d1[i].ToString();
-                    string d1Str = d1[i].ToString().Substring(0, Math.Min(d1StrTemp.ToString().Length, 4));
+                PrintFirstString(numOfCrit);
+                PrintingMainTable(alter, numOfCrit, numOfAlt, G, d1, d2, p1, p2, g1, g2, F1, F2, F);
 
-                    string d2StrTemp = d2[i].ToString();
-                    string d2Str = d2[i].ToString().Substring(0, Math.Min(d2StrTemp.ToString().Length, 4));
-
-                    string p1StrTemp = p1[i].ToString();
-                    string p1Str = p1[i].ToString().Substring(0, Math.Min(p1StrTemp.ToString().Length, 4));
-
-                    string p2StrTemp = p2[i].ToString();
-                    string p2Str = p2[i].ToString().Substring(0, Math.Min(p2StrTemp.ToString().Length, 4));
-
-                    string F1StrTemp = F1[i].ToString();
-                    string F1Str = F1[i].ToString().Substring(0, Math.Min(F1StrTemp.ToString().Length, 4));
-
-                    string F2StrTemp = F2[i].ToString();
-                    string F2Str = F2[i].ToString().Substring(0, Math.Min(F2StrTemp.ToString().Length, 4));
-
-                    string FStrTemp = F[i].ToString();
-                    string FStr = F[i].ToString().Substring(0, Math.Min(FStrTemp.ToString().Length, 4));
-
-
-                    string output = "";
-                    for (int j = 0; j < numOfCrit; j++)
-                    {
-                        output += alter[j, i] + "  ";
-                    }
-                    output += G[i] + "  " + d1Str.PadLeft(5) + "  " + d2Str.PadLeft(5) + " " +
-                        p1Str.PadLeft(5) + " " + p2Str.PadLeft(5) + " " +
-                        g1[i].ToString().PadLeft(4) + " " + g2[i].ToString().PadLeft(5)
-                        + " " + F1Str.PadLeft(5) + " " + F2Str.PadLeft(5) + " " + FStr.PadLeft(5);
-                    Console.WriteLine(output);
-                }
                 Console.WriteLine("Max F = " + MaxF);
                 Console.WriteLine("Index of Max F = " + indMaxF);
                 string strCentr1 = "";
@@ -253,6 +209,49 @@ namespace TPrLB1
                 }
 
             } while (restart);
+        }
+
+        private static void PrintingMainTable(int[,] alter, int numOfCrit, int numOfAlt, int[] G, float[] d1, float[] d2, float[] p1, float[] p2, int[] g1, int[] g2, float[] F1, float[] F2, float[] F)
+        {
+            for (int i = 0; i < numOfAlt; i++)
+            {
+                int indentation = 5;
+                int rounding = 4;
+                string d1Str = d1[i].ToString().Substring(0, Math.Min(d1[i].ToString().Length, rounding));
+                string d2Str = d2[i].ToString().Substring(0, Math.Min(d2[i].ToString().Length, rounding));
+                string p1Str = p1[i].ToString().Substring(0, Math.Min(p1[i].ToString().Length, rounding));
+                string p2Str = p2[i].ToString().Substring(0, Math.Min(p2[i].ToString().Length, rounding));
+                string F1Str = F1[i].ToString().Substring(0, Math.Min(F1[i].ToString().Length, rounding));
+                string F2Str = F2[i].ToString().Substring(0, Math.Min(F2[i].ToString().Length, rounding));
+                string FStr = F[i].ToString().Substring(0, Math.Min(F[i].ToString().Length, rounding));
+
+                string output = "";
+                for (int j = 0; j < numOfCrit; j++)
+                {
+                    output += alter[j, i] + "  ";
+                }
+                output += G[i] + "  "
+                       + d1Str.PadLeft(indentation) + "  "
+                       + d2Str.PadLeft(indentation) + " "
+                       + p1Str.PadLeft(indentation) + " "
+                       + p2Str.PadLeft(indentation) + " "
+                       + g1[i].ToString().PadLeft(indentation - 1) + " "
+                       + g2[i].ToString().PadLeft(indentation) + " "
+                       + F1Str.PadLeft(indentation) + " "
+                       + F2Str.PadLeft(indentation) + " "
+                       + FStr.PadLeft(indentation);
+                Console.WriteLine(output);
+            }
+        }
+
+        private static void PrintFirstString(int numOfCrit)
+        {
+            string outFirstStr = "";
+            for (int j = 0; j < numOfCrit; j++)
+            {
+                outFirstStr += "K" + (j + 1) + " ";
+            }
+            Console.WriteLine(outFirstStr + "G     d1     d2    p1    p2   g1    g2    F1    F2     F");
         }
 
         private static void Calculate_MaxF_IndMaxF(int numOfAlt, float[] F, out float MaxF, out int indMaxF)
